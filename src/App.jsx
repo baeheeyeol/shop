@@ -140,4 +140,7 @@ function ShoeList({ shoe }) {
     </div>
   )
 }
+function time() {
+  console.log('time')
+}
 export default App
