@@ -1,14 +1,15 @@
-import { useState } from 'react'
+import { createContext, useState } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css';
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 import { Button, Nav, Navbar, Container, Row, Col } from 'react-bootstrap';
-import bg from './img/bg.png';
 import data from './data.js';
 import { Routes, Route, Link, useNavigate, Outlet } from 'react-router-dom';
 import Detail from './routes/Detail.jsx'
+import Cart from './routes/Cart.jsx'
 import axios from 'axios'
+
+export let Context1 = createContext();
+
 function App() {
   const [count, setCount] = useState(0)
 
@@ -17,6 +18,7 @@ function App() {
   let [visible, setVisible] = useState(true);
   let [loading, setLoading] = useState(false);
   let navigate = useNavigate();
+  let [재고] = useState([10, 11, 12])
 
   return (
     <div className='App'>
@@ -27,6 +29,7 @@ function App() {
           <Nav className="me-auto">
             <Nav.Link onClick={() => { navigate('/') }}>Home</Nav.Link>
             <Nav.Link onClick={() => { navigate('/detail') }}>Detail</Nav.Link>
+            <Nav.Link onClick={() => { navigate('/cart') }}>Cart</Nav.Link>
           </Nav>
         </Container>
       </Navbar>
@@ -76,8 +79,12 @@ function App() {
         }>
 
         </Route>
-        <Route path="/detail/:id" element={<Detail shoes={shoes} />} />
-
+        <Route path="/detail/:id" element={
+          <Context1.Provider value={{ 재고 }}>
+            <Detail shoes={shoes} />
+          </Context1.Provider>
+        } />
+        <Route path="/cart" element={<Cart></Cart>}> </Route>
         <Route path="/about" element={<About />} >
           <Route path="member" element={<div>멤버임</div>} />
           <Route path="location" element={<div>위치정보임</div>} />
@@ -124,9 +131,12 @@ function ShoeList({ shoe }) {
   let url = 'https://codingapple1.github.io/shop/shoes' + (shoe.id + 1) + '.jpg'
   return (
     <div className="col-md-4">
-      <img src={url} width="80%" />
+      <Link to={`/detail/${shoe.id}`}>
+        <img src={url} width="80%" />
+      </Link>
       <h4>{shoe.title}</h4>
       <p>{shoe.content}</p>
+
     </div>
   )
 }

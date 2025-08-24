@@ -1,8 +1,12 @@
 import { useParams } from "react-router-dom";
 import styled from 'styled-components'
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Nav } from 'react-bootstrap';
 import '../App.css'
+
+import { Context1 } from './../App.jsx'
+
+
 
 let YellowBtn = styled.button`
   background : ${props => props.bg};
@@ -16,13 +20,15 @@ let Box = styled.div`
   padding : 20px;  
 `
 
-
-
 function Detail({ shoes }) {
+
+  let { 재고 } = useContext(Context1)
+
   let [visible, setVisible] = useState(true);
   let [warning, setWarning] = useState(false);
   let [num, setNum] = useState(false);
   let [tab, setTab] = useState(0);
+  let [fade, setFade] = useState('');
 
   useEffect(() => {
     let timer = setTimeout((e) => { setVisible(false) }, 2000);
@@ -31,13 +37,19 @@ function Detail({ shoes }) {
     } else {
       setWarning(false)
     }
-
     return () => {
-      console.log(1);
       clearTimeout(timer)
     }
   }, [num])
+  useEffect(() => {
+    let a = setTimeout(() => { setFade('end'); }, 100)
 
+    return () => {
+      clearTimeout(a);
+      setFade('');
+    }
+  }, []
+  )
   /*
     useEffect(() => {})
     useEffect(() => {},[])
@@ -50,8 +62,9 @@ function Detail({ shoes }) {
   let { id } = useParams();
   let selected = shoes.find(item => { return item.id == id });
   return (
-    <div className="container">
-      {visible == true ? <div className="alert alert-warning">2초이내 구매시 할이</div> : null}
+    <div className={`container start ${fade}`} >
+      {visible == true ? <div className="alert alert-warning">2초이내 구매시 할이</div> : null
+      }
       {warning == true ? <div className="alert alert-warning">경고 : 숫자만 입력하세요<div className=""></div></div> : null}
       {/* <input onChange={(e) => {
         if (isNaN(e.target.value)) {
@@ -61,7 +74,7 @@ function Detail({ shoes }) {
         }
       }}></input> */}
       <input
-        value={num}
+
         onChange={(e) => setNum(e.target.value)}
       />
       <button onClick={() => { setCount(count + 1) }}>버튼</button>
@@ -91,13 +104,13 @@ function Detail({ shoes }) {
           <Nav.Link onClick={() => { setTab(2) }} eventKey="link2">버튼2</Nav.Link>
         </Nav.Item>
       </Nav>
-      <TabContent tab={tab}></TabContent>
-    </div>
+      <TabContent tab={tab} selected={selected}></TabContent>
+    </div >
   )
 }
 
-
-function TabContent({ tab }) {
+function TabContent({ tab, selected }) {
+  let { 재고 } = useContext(Context1)
   let [fade, setFade] = useState('')
   useEffect(() => {
 
@@ -108,7 +121,7 @@ function TabContent({ tab }) {
     }
   }, [tab])
   return <div className={`start ${fade}`}>
-    {[<div>내용0</div>, <div>내용1</div>, <div>내용2</div>][tab]}
+    {[<div>{재고}</div>, <div>내용1</div>, <div>내용2</div>][tab]}
   </div>
 }
 export default Detail;
